@@ -1,11 +1,12 @@
 import json
 from pathlib import Path
+from operator import attrgetter
 
 class TaskManager:
-    def __init__(self, task: str, file: str, priority: int, deadline: str):
-        self.task = task
-        self.priority = priority
-        self.deadline = deadline
+    def __init__(self, file: str):
+        self.task = None
+        self.priority = None
+        self.deadline = None
         self.file = file
         self._read_tasks(file)
 
@@ -44,15 +45,31 @@ class TaskManager:
             print(f"Error writing file {file}")
             print(e)
 
-    def add_task(self) -> None:
+    def add_task(self, task: str, priority: int, deadline: str) -> None:
         curr_task = dict()
-        curr_task["task"] = self.task
-        curr_task["priority"] = self.priority
-        curr_task["deadline"] = self.deadline
+        curr_task["task"] = task
+        curr_task["priority"] = priority
+        curr_task["deadline"] = deadline
         if not self.tasks_data:
             self.tasks_data = []
         self.tasks_data.append(curr_task)
         self._write_tasks(self.file, self.tasks_data)
+
+    def list_tasks(self) -> list[dict]:
+        print('{:^10}{:^18}{:>8}'.format("PRIORITY", "DEADLINE", "TASK"))
+        for task in self.tasks_data:
+            print('{:^10}{:^18}    {}'.format(task["priority"], task["deadline"], task["task"]))
+
+    def sort(self, priority: bool, deadline: bool, reverse: bool) -> None:
+        if priority and deadline:
+            #yet to fix
+            self.tasks_data.sort(key=attrgetter("priority", "deadline"), reverse=reverse)
+        elif priority:
+            self.tasks_data.sort(key=lambda task: task["priority"], reverse=reverse)
+        elif deadline:
+            self.tasks_data.sort(key=lambda task: task["deadline"], reverse=reverse)
+
+
 
     def clean(self) -> None:
         self.tasks_data = []
