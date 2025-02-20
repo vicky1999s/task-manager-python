@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
-from operator import attrgetter
+from operator import itemgetter
+import datetime
 
 class TaskManager:
     def __init__(self, file: str):
@@ -61,15 +62,13 @@ class TaskManager:
             print('{:^10}{:^18}    {}'.format(task["priority"], task["deadline"], task["task"]))
 
     def sort(self, priority: bool, deadline: bool, reverse: bool) -> None:
+        str_to_date = lambda x: datetime.datetime.strptime(x, "%Y:%m:%d %H:%M")
         if priority and deadline:
-            #yet to fix
-            self.tasks_data.sort(key=attrgetter("priority", "deadline"), reverse=reverse)
+            self.tasks_data.sort(key=lambda task: (task["priority"], -str_to_date(task["deadline"]).timestamp()), reverse=reverse)
         elif priority:
             self.tasks_data.sort(key=lambda task: task["priority"], reverse=reverse)
         elif deadline:
-            self.tasks_data.sort(key=lambda task: task["deadline"], reverse=reverse)
-
-
+            self.tasks_data.sort(key=lambda task: str_to_date(task["deadline"]), reverse=not reverse)
 
     def clean(self) -> None:
         self.tasks_data = []
