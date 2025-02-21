@@ -2,7 +2,7 @@ import argparse
 import datetime
 from TaskManager import TaskManager
 
-parser = argparse.ArgumentParser(prog="Task Manager", description="A CLI based task manager that manages tasks",
+parser = argparse.ArgumentParser(prog="Task Manager", description="A CLI based task manager that manage tasks",
                                  allow_abbrev=False)
 parser.add_argument("-t", "--task", required=False, help="The task name that you want to add")
 parser.add_argument("-p", "--priority", required=False, help="Priority from low(1) to high(3). default is 1", type=int, default=1)
@@ -26,10 +26,11 @@ if args.task:
     task_manager.add_task(task=args.task, priority=args.priority, deadline=args.deadline)
     print(f"Added new task")
 if args.list:
-    if len(args.sort)==2:
-        task_manager.sort(priority=True, deadline=True, reverse=args.asc)
-    elif "priority" in args.sort:
-        task_manager.sort(priority=True, deadline=False, reverse=args.asc)
-    else:
-        task_manager.sort(priority=False, deadline=True, reverse=args.asc)
+    if args.sort:
+        if len(args.sort)==2:
+            task_manager.sort(priority=True, deadline=True, reverse=args.asc)
+        elif "priority" in args.sort:
+            task_manager.sort(priority=True, deadline=False, reverse=args.asc)
+        else:
+            task_manager.sort(priority=False, deadline=True, reverse=args.asc)
     task_manager.list_tasks()
